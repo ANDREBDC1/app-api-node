@@ -1,4 +1,4 @@
-const siquelizer = require('./index')
+const sequelize = require('./index')
 const { Umzug, SequelizeStorage } = require('umzug');
 
 const umzug = new Umzug({
