@@ -11,15 +11,15 @@ module.exports = {
           allowNull : false
         },
         nome: {
-          type : DataTypes.STRING,
+          type : DataTypes.STRING(150),
           allowNull: false,
         },
         email: {
-          type : DataTypes.STRING,
+          type : DataTypes.STRING(150),
           allowNull: false,
         },
         senha: {
-          type : DataTypes.STRING,
+          type : DataTypes.STRING(150),
           allowNull: false,
         }
       });
