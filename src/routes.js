@@ -4,7 +4,7 @@ const UserController = require('./controllers/UserController')
 
 const routes = express.Router()
 
-routes.get('/', (res) => {
+routes.get('/', (req, res) => {
    sequelize
   .authenticate()
   .then(() => {
