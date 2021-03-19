@@ -1,4 +1,5 @@
 const {Model, DataTypes} = require('sequelize')
+const bcryptjs =  require('bcryptjs')
 
 class User extends Model{
     static init(sequelize) {
@@ -13,5 +14,12 @@ class User extends Model{
 
     }
 }
+
+User.beforeSave('save', async (instance, options)=>{
+
+    const hash = await bcryptjs.hash(instance.senha, 10)
+    instance.senha = hash
+    return instance.save()
+})
 
 module.exports = User;
