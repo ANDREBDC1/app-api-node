@@ -38,8 +38,9 @@ module.exports = {
             return res.json({error: 'Email não encontrado!'})
         }
            
-
-        if(await !bcryptjs.compare(senha, user.senha)){
+        const isValidate = await bcryptjs.compare(senha, user.senha)
+        
+        if(isValidate){
             return res.json({error: 'Senha do usuário invalida!'})
         }
 
