@@ -3,7 +3,7 @@ const authConfing = require('../conf/auth.json')
 
 module.exports = {
     verifyJwt: (req, res, next) => {
-        const token = req.headers.Authorization
+        const token = req.headers.authorization
     
         if(!token)
            return res.status(401).send({error: 'No token provided'})
