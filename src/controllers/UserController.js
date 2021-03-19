@@ -39,7 +39,7 @@ module.exports = {
         }
            
 
-        if(!bcryptjs.compare(senha, user.senha)){
+        if(await !bcryptjs.compare(senha, user.senha)){
             return res.json({error: 'Senha do usuário invalida!'})
         }
 
