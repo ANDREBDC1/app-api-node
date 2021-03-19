@@ -5,9 +5,9 @@ class User extends Model{
     static init(sequelize) {
 
         super.init({
-            nome: DataTypes.STRING(150),
-            email: DataTypes.STRING(150),
-            senha: DataTypes.STRING(150),
+            nome: DataTypes.STRING,
+            email: DataTypes.STRING,
+            senha: DataTypes.STRING,
         },{
             sequelize
         } )

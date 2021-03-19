@@ -17,7 +17,7 @@ module.exports = {
             if(await User.findOne({where :{email}}))
                 return res.json({error: 'Email já cadastrado!'})
 
-            const rash = await bcryptjs.hash(senha)
+            const rash = await bcryptjs.hash(senha, 10)
             const user = await User.create({nome, email, senha : rash})
 
             return res.json({token : generateToken({id : user.id})});
