@@ -3,8 +3,8 @@ const bcryptjs =  require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const authConfig = require('../conf/auth.json')
 
-const generateToken  = async (params = {}) =>{
-    return await jwt.sign(params, authConfig.secret, {
+const generateToken  = (params = {}) =>{
+    return jwt.sign(params, authConfig.secret, {
         expiresIn: 8640
     })
 }
