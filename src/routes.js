@@ -21,7 +21,7 @@ routes.get('/', async (req, res) => {
 })
 
 routes.post('/api/register', UserController.register)
-routes.post('/api/auth', UserController.auth)
-routes.get("/api/testAuth", authMiddleware.verifyJwt, AuthTestController.testAuth)
+routes.post('/api/login', UserController.login)
+routes.get('/api/testAuth', authMiddleware.verifyJwt, AuthTestController.testAuth)
 
 module.exports = routes;

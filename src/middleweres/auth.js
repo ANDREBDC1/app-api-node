@@ -3,22 +3,22 @@ const authConfing = require('../conf/auth.json')
 
 module.exports = {
     verifyJwt: (req, res, next) => {
-        const authHeader = req.headers.authorization
+        const token = req.headers.Authorization
     
-        if(!authHeader)
+        if(!token)
            return res.status(401).send({error: 'No token provided'})
     
     
-        const parts = authHeader.split(' ')
+        // const parts = authHeader.split(' ')
     
     
-        if(parts.length === 2)
-            return res.status(401).send({error: 'Token error'})
+        // if(parts.length === 2)
+        //     return res.status(401).send({error: 'Token error'})
         
-        const [schame, token] = parts;
+        // const [schame, token] = parts;
     
-        if(!/^Bearer$/i.test(schame))
-            return res.status(401).send({error: 'Token Malformatted'})
+        // if(!/^Bearer$/i.test(schame))
+        //     return res.status(401).send({error: 'Token Malformatted'})
         
         jwt.verify(token, authConfing.secret, (error, decoded) => {
             if(error)

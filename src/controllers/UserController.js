@@ -27,19 +27,19 @@ module.exports = {
         }
         
     },
-    auth : async (req, res) =>{
+    login : async (req, res) =>{
 
         const {email, senha} = req.body
 
         const user = await User.findOne({email})
 
         if(!user){
-            return res.status(400).send({error: 'Email não encontrado!'})
+            return res.json({error: 'Email não encontrado!'})
         }
            
 
         if(!bcryptjs.compare(senha, user.senha)){
-            return res.status(400).send({error: 'Senha do usuário invalida!'})
+            return res.json({error: 'Senha do usuário invalida!'})
         }
 
         return res.json({token : generateToken({id : user.id})});

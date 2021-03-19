@@ -5,9 +5,9 @@ class User extends Model{
     static init(sequelize) {
 
         super.init({
-            nome: DataTypes.STRING,
-            email: DataTypes.STRING,
-            senha: DataTypes.STRING,
+            nome: DataTypes.STRING(150),
+            email: DataTypes.STRING(150),
+            senha: DataTypes.STRING(150),
         },{
             sequelize
         } )
@@ -15,11 +15,11 @@ class User extends Model{
     }
 }
 
-User.beforeSave('save', async (instance, options)=>{
+// User.beforeSave('save', async (instance, options)=>{
 
-    const hash = await bcryptjs.hash(instance.senha, 10)
-    instance.senha = hash
-    return instance.save()
-})
+//     const hash = await bcryptjs.hash(instance.senha, 10)
+//     instance.senha = hash
+//     return instance.save()
+// })
 
 module.exports = User;
