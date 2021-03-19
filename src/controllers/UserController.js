@@ -14,7 +14,7 @@ module.exports = {
         try {
             const {nome, email, senha} = req.body
 
-            if(await User.findOne({email}))
+            if(await User.findOne({where :{email}}))
                 return res.status(400).send({error: 'Email já cadastrado!'})
 
             const user = await User.create({nome, email, senha})
@@ -31,7 +31,7 @@ module.exports = {
 
         const {email, senha} = req.body
 
-        const user = await User.findOne({email})
+        const user = await User.findOne({ where: {email}})
 
         if(!user){
             return res.json({error: 'Email não encontrado!'})
