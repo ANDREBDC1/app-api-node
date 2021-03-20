@@ -39,11 +39,31 @@ module.exports = {
         }
            
         const isValidate = await bcryptjs.compare(senha, user.senha)
-        
+
         if(isValidate){
-            return res.json({error: 'Senha do usuário invalida!'})
+            return res.json({error: 'Senha invalida!'})
         }
 
         return res.json({token : generateToken({id : user.id})});
+    },
+
+    refreshToken: async (req, res) =>{
+        const {token}  = req.body
+
+        if(!token)
+         res.status(401).send({message: 'Não foi informado o token'})
+
+        jwt.verify(token, authConfig.secret, (error, decoded) =>{
+            if(error){
+                if(error.name === 'TokenExpiredError'){
+                    return res.json({token : generateToken({id : decoded.id})})
+                }
+
+                return res.status(401).send({message: 'Token Invalido'})
+            }
+
+            return res.json({token})
+        })
     }
+
 }
