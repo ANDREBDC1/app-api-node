@@ -56,7 +56,8 @@ module.exports = {
         jwt.verify(token, authConfig.secret, (error, decoded) =>{
             if(error){
                 if(error.name === 'TokenExpiredError'){
-                    return res.json({token : generateToken({id : decoded.id})})
+                    const decode = jwt.decode(token, authConfig.secret)
+                    return res.json({token : generateToken({id : decode.id})})
                 }
 
                 return res.status(401).send({message: 'Token Invalido'})
