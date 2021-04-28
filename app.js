@@ -6,6 +6,7 @@ require('./src/database')
 const app = express()
 
 app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 app.use(routes)
 
 const server = app.listen(process.env.PORT || 8090, async () => {
