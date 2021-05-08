@@ -21,6 +21,10 @@ module.exports = {
         senha: {
           type : DataTypes.STRING(1000),
           allowNull: false,
+        },
+        urlAvatar: {
+          type : DataTypes.STRING(1000),
+          allowNull: true,
         }
       });
   },

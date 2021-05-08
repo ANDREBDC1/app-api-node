@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const authConfing = require('../conf/auth.json')
-require('dotenv').config()
+//require('dotenv').config()
 const User = require('../models/User')
 
 module.exports = {
@@ -28,14 +28,7 @@ module.exports = {
                     return res.status(401).json({error: 'Token invalid'})
                 }
 
-                const user = await User.findByPk(decoded.id 
-                    // {include: [
-                    // { 
-                    //     models: Permission,
-                    //     as : 'permissions',
-                    //     through: {attributes: []},
-                    // } ]}
-                )
+                const user = await User.findByPk(decoded.id)
 
                 if(!user){
                     return res.status(401).json({error: 'Not authorization'})

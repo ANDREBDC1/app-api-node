@@ -1,10 +1,9 @@
 const User = require('../models/User')
-//const UserPermision = require('../models/UserPermision')
-
 const bcryptjs =  require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const authConfig = require('../conf/auth.json')
-//const sequelize = require('../../src/database')
+const servicesAws = require('../services/servicesAws')
+
 
 
 const generateToken  = (params = {}) =>{
@@ -17,7 +16,8 @@ module.exports = {
     register: async (req, res) =>{
         const trans = await User.sequelize.transaction();
         try {
-            const {nome, email, senha, permissoes} = req.body
+            
+            const {nome, email, senha, permissoes, urlPerfil, imagemBase64} = req.body
 
             if(await User.findOne({where :{email}}))
                 return res.json({error: 'Email já cadastrado!'})
@@ -29,8 +29,25 @@ module.exports = {
             if(permissoes && permissoes.length > 0){
                 user.addPermissions(permissoes)
             }
-            
+
             await trans.commit();
+
+            if(urlPerfil){
+                // update user
+                user.urlAvatar = urlPerfil;
+                await user.save()
+
+            }else{
+
+                if(imagemBase64){
+                    const {location} = await servicesAws.uploadFile({name: user.id, base64: imagemBase64})
+                    user.urlAvatar = location;
+                    await user.save()
+                }
+
+            }
+            
+            
             return res.status(200).json({token : generateToken({id : user.id})});
 
         }catch(err){

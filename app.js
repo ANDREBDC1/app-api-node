@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const routes = require('./src/routes')
 const umzug = require('./src/database/umzug')
