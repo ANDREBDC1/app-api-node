@@ -22,9 +22,6 @@ const db = new Sequelize(dbConfig);
 
 
 
-// db.sequelize = sequelize;
-// db.Sequelize = Sequelize;
-
 // map
 User.init(db);
 Permission.init(db)
@@ -34,12 +31,5 @@ Object.keys(db.models).forEach((modelName) => {
     db.models[modelName].associate(db.models);
   }
 });
-
-// association
-// User.belongsToMany(Permission, {
-//     through: 'userPermissions',
-//     as: 'permissions',
-//     foreignKey: 'userId',
-// })
 
 module.exports = db;

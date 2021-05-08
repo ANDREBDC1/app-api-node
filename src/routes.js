@@ -26,6 +26,6 @@ routes.post('/api/login', UserController.login)
 routes.post('/api/refreshToken', UserController.refreshToken)
 
 // test Auth
-routes.get('/api/testAuth', authMiddleware.verifyJwt, AuthTestController.testAuth)
+routes.get('/api/testAuth', authMiddleware.isAuth(['admin']), AuthTestController.testAuth)
 
 module.exports = routes;

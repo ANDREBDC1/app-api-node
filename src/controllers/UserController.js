@@ -64,13 +64,18 @@ module.exports = {
         if(!token)
          res.status(401).json({message: 'Não foi informado o token'})
 
-        jwt.verify(token, authConfig.secret, (error, decoded) =>{
+        jwt.verify(token, authConfig.secret, async(error, decoded) =>{
+            //const decode = jwt.decode(token, authConfig.secret)
+            const user = await User.findByPk(decoded.id)
+            if(!user){
+                return res.status(401).json({message: 'Token Invalido'})
+            }
+
             if(error){
                 if(error.name === 'TokenExpiredError'){
-                    const decode = jwt.decode(token, authConfig.secret)
-                    return res.status(200).json({token : generateToken({id : decode.id})})
+                    return res.status(200).json({token : generateToken({id : decoded.id})})
                 }
-
+                
                 return res.status(401).json({message: 'Token Invalido'})
             }
 
