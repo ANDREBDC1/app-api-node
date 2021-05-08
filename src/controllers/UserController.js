@@ -1,13 +1,12 @@
 const User = require('../models/User')
 const bcryptjs =  require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const authConfig = require('../conf/auth.json')
 const servicesAws = require('../services/servicesAws')
 
 
 
 const generateToken  = (params = {}) =>{
-    return jwt.sign(params, authConfig.secret, {
+    return jwt.sign(params, process.env.SECRET, {
         expiresIn: 8640
     })
 }
@@ -81,7 +80,7 @@ module.exports = {
         if(!token)
          res.status(401).json({message: 'Não foi informado o token'})
 
-        jwt.verify(token, authConfig.secret, async(error, decoded) =>{
+        jwt.verify(token, process.env.SECRET, async(error, decoded) =>{
             //const decode = jwt.decode(token, authConfig.secret)
             const user = await User.findByPk(decoded.id)
             if(!user){

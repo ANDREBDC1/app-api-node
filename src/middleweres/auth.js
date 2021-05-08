@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken')
-const authConfing = require('../conf/auth.json')
-//require('dotenv').config()
 const User = require('../models/User')
 
 module.exports = {
