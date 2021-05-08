@@ -7,11 +7,30 @@ class User extends Model{
             nome: DataTypes.STRING,
             email: DataTypes.STRING,
             senha: DataTypes.STRING,
-        },{
+        },
+        {
             sequelize
-        } )
+        })
 
     }
+
+    static associate(models) {
+         User.belongsToMany(models.Permission, {
+                    through: 'userPermissions',
+                    as: 'permissions',
+                    foreignKey: 'userId',
+                 })
+    }
 }
+
+// User.associate = (models) =>{
+//     User.belongsToMany(models.Permission, {
+//         through: 'userPermissions',
+//         as: 'permissions',
+//         foreignKey: 'userId',
+//     })
+// }
+
+
 
 module.exports = User;

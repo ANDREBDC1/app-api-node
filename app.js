@@ -9,7 +9,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(routes)
 
-const server = app.listen(process.env.PORT || 8090, async () => {
+const server = app.listen(process.env.PORT || 8081, async () => {
 
     await umzug.up();
     var host = server.address().address;
