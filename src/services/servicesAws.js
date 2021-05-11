@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const storageS3 = new AWS.S3()
+const clenteSendEmail = new AWS.SES({apiVersion: '2010-12-01', region: 'sa-east-1'})
 
 module.exports ={
     uploadFile: async (file = {}) => {
@@ -24,11 +25,11 @@ module.exports ={
             return {error: 'Invalid file type', location, key}
         }
 
-        const fileNameBase64 = new Buffer(`${file.name}`).toString("base64")
+        //const fileNameBase64 = new Buffer(`${file.name}`).toString("base64")
 
         const params = {
-            Bucket: process.env.BUCKET_NAME,
-            Key: `${fileNameBase64}.${type}`, // type is not required
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: `${file.name}.${type}`, // type is not required
             Body: base64Data,
             ACL: 'public-read',
             ContentEncoding: 'base64', // required
@@ -46,6 +47,62 @@ module.exports ={
 
         
         return {error: null, key, location};
+    
+    },
+
+    sendEmail: async (email = {}) => {
+
+        if(!email.AddressesTo && !Array.isArray(email.AddressesTo))
+            return {error: 'Endereços de emails destinatario não inforamdos', messageId: null}
+
+        const params = {
+            Source: process.env.AWS_EMAIL_SOURCE,
+            Destination: { /* required */
+                ToAddresses: email.AddressesTo
+              },
+              Message: { /* required */
+                Body: { /* required */
+                  Html: {
+                   Charset: "UTF-8",
+                   Data: email.Message
+                  },
+                //   Text: {
+                //    Charset: "UTF-8",
+                //    Data: "Olá mundo"
+                //   }
+                 },
+                 Subject: {
+                  Charset: 'UTF-8',
+                  Data: email.Subject
+                 }
+                },
+            //   ReplyToAddresses: [
+            //      email.ReplyToAddresses | '',
+            //     /* more items */
+            //   ],
+            // CcAddresses: [
+
+            // ]
+        }
+
+        if(email.ReplyToAddresses && Array.isArray(email.ReplyToAddresses)){
+            params.ReplyToAddresses = email.ReplyToAddresses
+        }
+
+        if(email.CcAddresses && Array.isArray(email.CcAddresses)){
+            params.CcAddresses = email.CcAddresses
+        }
+
+        let messageId = ''
+        try {
+
+            messageId =  await clenteSendEmail.sendEmail(params).promise();
+
+        }catch(error){
+            return {error, messageId}
+        }
+
+        return {error: null, messageId}
     
     }
 }

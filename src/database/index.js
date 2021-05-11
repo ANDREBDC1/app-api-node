@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const dbConfig = require('../conf/database.js')
+const dbConfig = require('../config/database.js')
 const User = require('../models/User')
 const Permission = require('../models/Permission')
 const db = new Sequelize(dbConfig);

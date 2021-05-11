@@ -3,7 +3,7 @@ const path = require('path')
 const dbConectProducao = {
     dialect: process.env.DIALECT || 'mysql',
     host : process.env.DB_HOST || 'localhost',
-    database: process.env.DATABASE || 'dbApi',
+    database: process.env.DATABASE || 'dblocal',
     port: process.env.DB_PORT || 52396,
     username: process.env.DB_USER || 'root',
     password: process.env.DB_PASS || '',

@@ -19,11 +19,19 @@ module.exports = {
           allowNull: false,
         },
         senha: {
-          type : DataTypes.STRING(1000),
+          type : DataTypes.STRING(200),
           allowNull: false,
         },
         urlAvatar: {
-          type : DataTypes.STRING(1000),
+          type : DataTypes.STRING(500),
+          allowNull: true,
+        },
+        tokenReseteSenha: {
+          type : DataTypes.STRING(80),
+          allowNull: true,
+        },
+        dataExpTokenReseteSenha:{
+          type : DataTypes.DATE,
           allowNull: true,
         }
       });
