@@ -3,7 +3,6 @@ const bcryptjs =  require('bcryptjs')
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 const servicesAws = require('../services/servicesAws')
-const { NetworkFirewall } = require('aws-sdk')
 
 
 
@@ -63,101 +62,128 @@ module.exports = {
     },
     login : async (req, res) =>{
 
-        const {email, senha} = req.body
+        try{
+            const {email, senha} = req.body
 
-        const user = await User.findOne({ where: {email}})
-
-        if(!user){
-            return res.status(400).json({error: 'Email invalida!'})
+            const user = await User.findOne({ where: {email}})
+    
+            if(!user){
+                return res.status(400).json({error: 'Email invalida!'})
+            }
+               
+            const isValidate = await bcryptjs.compare(senha, user.senha)
+    
+            if(!isValidate){
+                return res.status(400).json({error: 'Senha invalida!'})
+            }
+    
+            return res.status(200).json({token : generateToken({id : user.id})});
+        }catch(error){
+            return res.status(400).json({error})
         }
-           
-        const isValidate = await bcryptjs.compare(senha, user.senha)
-
-        if(!isValidate){
-            return res.status(400).json({error: 'Senha invalida!'})
-        }
-
-        return res.status(200).json({token : generateToken({id : user.id})});
+       
     },
 
     refreshToken: async (req, res) =>{
-        const {token}  = req.body
+        try{
+            const {token}  = req.body
+            if(!token)
+                res.status(400).json({message: 'Não foi informado o token'})
 
-        if(!token)
-         res.status(400).json({message: 'Não foi informado o token'})
-
-        jwt.verify(token, process.env.SECRET, async(error, decoded) =>{
+            jwt.verify(token, process.env.SECRET, async(error, decoded) =>{
             //const decode = jwt.decode(token, authConfig.secret)
-            const user = await User.findByPk(decoded.id)
-            if(!user){
-                return res.status(401).json({message: 'Token Invalido'})
-            }
-
-            if(error){
-                if(error.name === 'TokenExpiredError'){
-                    return res.status(200).json({token : generateToken({id : decoded.id})})
+                const user = await User.findByPk(decoded.id)
+                if(!user){
+                    return res.status(401).json({message: 'Token Invalido'})
                 }
-                
-                return res.status(401).json({message: 'Token Invalido'})
-            }
 
-            return res.status(200).json({token})
-        })
+                if(error){
+                    if(error.name === 'TokenExpiredError'){
+                        return res.status(200).json({token : generateToken({id : decoded.id})})
+                    }
+                
+                    return res.status(401).json({message: 'Token Invalido'})
+                }
+
+                return res.status(200).json({token})
+             })
+
+        
+        }catch(error){
+
+            return res.status(400).json({error})
+        }
+        
     },
 
     forgotPassword: async (req, res) =>{
 
-        const {email} = req.body;
+        try{
+            const {email} = req.body;
 
-        const user = await User.findOne({ where: {email}})
-
-        if(!user){
-            return res.status(400).json({error: 'Email invalida!'})
+            const user = await User.findOne({ where: {email}})
+    
+            if(!user){
+                return res.status(400).json({error: 'Email invalida!'})
+            }
+    
+            const token = crypto.randomBytes(24).toString('hex');
+    
+            user.tokenReseteSenha = token
+            const now = new Date()
+            now.setHours(now.getHours() + 2)
+            user.dataExpTokenReseteSenha = now
+    
+            const emailParam = {
+                Message: getMensageForgotpassword(user), 
+                Subject: 'Solicitação Resente de senha',
+                AddressesTo: [user.email]
+            }
+            const {messageId, error} = await servicesAws.sendEmail(emailParam);
+    
+            if(error){
+                return res.status(400).json({message: 'erro send email', error})
+            }
+            await user.save()
+            return res.status(200).json({message : 'OK', messageId})
+        }catch(error){
+            return res.status(400).json({error})
         }
-
-        const token = crypto.randomBytes(24).toString('hex');
-
-        user.tokenReseteSenha = token
-        const now = new Date()
-        now.setHours(now.getHours() + 2)
-        user.dataExpTokenReseteSenha = now
-
-        const emailParam = {
-            Message: getMensageForgotpassword(user), 
-            Subject: 'Solicitação Resente de senha',
-            AddressesTo: [user.email]
-        }
-        const {messageId, error} = await servicesAws.sendEmail(emailParam);
-
-        if(error){
-            return res.status(400).json({message: 'erro send email', error})
-        }
-        await user.save()
-        return res.status(200).json({message : 'OK', messageId})
+        
     },
 
     resetPassword: async (req, res) =>{
 
-        const {email, token, senha} = req.body;
+        try{
+            const {email, token, senha} = req.body;
 
-        const user = await User.findOne({ where: {email}})
+            if(!senha){
+                return res.status(400).json({error: 'Senha invalida!'})
+            }
+    
+            const user = await User.findOne({ where: {email}})
+    
+            if(!user){
+                return res.status(400).json({error: 'Email invalida!'})
+            }
+            if(user.tokenReseteSenha !== token){
+                return res.status(400).json({error: 'Token invalido!'})
+            }
+            const now = new Date()
+            if(user.dataExpTokenReseteSenha < now){
+                return res.status(400).json({error: 'Token invalido!'})
+            }
+    
+            user.senha = senha
+            user.tokenReseteSenha = null
+            user.dataExpTokenReseteSenha=null
+            await user.save()
+            return res.status(200).json({message : 'OK'})
 
-        if(!user){
-            return res.status(400).json({error: 'Email invalida!'})
+        }catch(error){
+            return res.status(400).json({error})
         }
-        if(user.tokenReseteSenha !== token){
-            return res.status(400).json({error: 'Token invalido!'})
-        }
-        const now = new Date()
-        if(user.dataExpTokenReseteSenha < now){
-            return res.status(400).json({error: 'Token invalido!'})
-        }
-
-        user.senha = senha
-        user.tokenReseteSenha = null
-        user.dataExpTokenReseteSenha=null
-        await user.save()
-        return res.status(200).json({message : 'OK'})
+        
     }
 
 }
